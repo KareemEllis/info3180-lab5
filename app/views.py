@@ -5,8 +5,11 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file creates your application.
 """
 
-from app import app
-from flask import render_template, request, jsonify, send_file
+from app import app, db
+from flask import render_template, request, jsonify, send_file, url_for, flash, send_from_directory
+from werkzeug.utils import secure_filename
+from app.forms import MovieForm
+from app.models import Movie
 import os
 
 
