@@ -12,7 +12,6 @@ from app.forms import MovieForm
 from app.models import Movie
 import os
 
-
 ###
 # Routing for your application.
 ###
@@ -25,6 +24,7 @@ def index():
 @app.route('/api/v1/movies', methods=['POST'])
 def movies():
     form = MovieForm() 
+    data = ""
 
     if form.validate_on_submit():
         title = form.title.data
@@ -35,24 +35,27 @@ def movies():
         poster.save(os.path.join(
             app.config['UPLOAD_FOLDER'], filename
         ))
-
-        formErrors = form_errors()
-
-        #Checks if there are any errors
-        if formErrors == []:
-            errors = {
-                "errors": formErrors
-            }
-            return jsonify(errors)
         
-        else:
-            data = {
-                "message": "Movie Successfully added",
-                "title": title,
-                "POSTER": filename,
-                "description": description
-            }
-            return jsonify(data)
+        newMovie = Movie(title, description, poster)
+
+        db.session.add(newMovie)
+        db.session.commit()
+
+        data = {
+            "message": "Movie Successfully added",
+            "title": title,
+            "POSTER": filename,
+            "description": description
+        }
+        return jsonify(data)
+
+    else:
+        formErrors = form_errors(form)
+        
+        errors = {
+            "errors": formErrors
+        }
+        return jsonify(errors)
 
         
 
